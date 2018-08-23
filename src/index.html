@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Event Crowd - Contract Interaction</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+          <h1 class="text-center">Event Crowd</h1>
+          <hr/>
+          <br/>
+        </div>
+      </div>
+
+
+      <div id="idContractsDashboard" class="row">
+        <div class="col-sm-6 col-sm-push-3 col-md-40 col-md-push-40">
+          <div class="panel panel-default">
+
+
+            <div class="panel-heading">
+              <h2 class="panel-title">Contracts Dashboard</h2>
+            </div>
+
+
+            <div class="panel-body">
+
+
+              <h4>Contract Status</h4>
+
+              <strong>Contract Started?</strong> <FONT COLOR="2E64FE"> <span id="idContractStarted">(no status)</span> </font>
+              <br/>
+              <strong>Contract Closed?</strong> <FONT COLOR="2E64FE"> <span id="idContractClosed">(no status)</span> </font>
+              <br/>
+              <strong>Contract Finalized?</strong> <FONT COLOR="2E64FE"> <span id="idIsFinalized">(no status)</span> </font>
+              <br/>
+              <br/>
+
+
+              <h4>Contract Timeline</h4>
+
+              <strong>Time to start contract</strong>:   <FONT COLOR="2E64FE"> <span id="idContractStart">(no status)</span> </font>
+              <br/>
+              <strong>Time to close contract</strong>:   <FONT COLOR="2E64FE"> <span id="idContractClose">(no status)</span> </font>
+              <br/>
+              <br/>
+
+
+              <h4>Funds raised</h4>
+
+              <strong>Total bought tickets:</strong> <FONT COLOR="2E64FE"> <span id="idConractBalanceTic">(no status)</span> </font>
+              <br/>
+              <strong>Contract balance in ether:</strong> <FONT COLOR="2E64FE"> <span id="idConractBalanceEth">(no status)</span> </font>
+              <br/>
+              <strong>Funding Goal:</strong> <FONT COLOR="2E64FE"> <span id="idFundingGoal">(no status)</span> </font>
+              <br/>
+              <strong>Goal reached?</strong> <FONT COLOR="2E64FE"> <span id="idGoalReached">(no status)</span> </font>
+              <br/>
+              <br/>
+
+
+
+              <h4>Addresses</h4>
+              To list the addresses of all deployed contracts and their owners for transpaerncy and integrity.
+              <br/>
+              <br/>
+
+              <strong>Ticket Token contract     </strong>: <FONT COLOR="2E64FE"> <span id="idTicketTokenAddress">(no data)</span> </font>
+              <br/>
+              <strong>Owned by           </strong>: <FONT COLOR="2E64FE"> <span id="idTicketTokenOwner">(no data)</span> </font> <FONT COLOR="FA5858">(should be owned by "EventCrowd contract")</font>
+              <br/>
+              <br/>
+              <strong>Event Crowd contract </strong>: <FONT COLOR="2E64FE"> <span id="idEventCrowdAddress">(no data)</span> </font>
+              <br/>
+              <strong>Owned by           </strong>: <FONT COLOR="2E64FE"> <span id="idEventCrowdOwner">(no data)</span> </font> <FONT COLOR="BDBDBD">(should be your main MetaMask address)</font>
+              <br/>
+              <br/>
+              <br/>
+
+
+
+
+              <strong>You need to press this button</strong> to change the ownership of the TicketToken contract from the "EventCrowd Owner" (which is you!) to "EventCrowd contract".
+              <br/>
+              <br/>
+              <button class="" id="idtransferOwnership" type="button">Change ownership</button>
+              <br/>
+              <br/>
+
+            </div>
+
+          </div>
+          <br/><br/>
+        </div>
+      </div>
+
+
+      <div id="idUserPanel" class="row">
+        <div class="col-sm-6 col-sm-push-3 col-md-40 col-md-push-40">
+          <div class="panel panel-default">
+
+
+            <div class="panel-heading">
+              <h3 class="panel-title">User Panel</h3>
+            </div>
+
+            <div class="panel-body">
+
+              <strong>Your current account:</strong> <FONT COLOR="2E64FE"> <span id="idCurrentAcount">(no data)</span> </font>
+              <br/>
+              <FONT COLOR="BDBDBD"> (This shows the MetaMask account that you are currently using. Make sure it is the right account before any transaction) </font>
+              <br/>
+              <br/>
+              <strong>Would you like to buy tickets?</strong>:
+              <br/>
+              <input type="text" class="" id="buyingAmount" placeholder="# of tickets" />
+              <button class="" id="reserveButton" type="button">Buy</button>
+              <br/>
+              <br/>
+              <strong>Ticket balance:</strong> <FONT COLOR="2E64FE"> <span id="idTicketBalance">(no data)</span> </font>
+              <br/>
+              <br/>
+              <strong>Your Meta-mask balance:</strong> <FONT COLOR="2E64FE"> <span id="idEthBalance">(no data)</span> </font>
+              <br/>
+              <br/>
+              <strong>would you like to refund?</strong>
+              <button class="" id="idClaimRefund" type="button">Claim refund</button>
+              <br/><br/>
+
+
+            </div>
+
+          </div>
+          <br/><br/>
+        </div>
+      </div>
+
+
+
+      <div id="OwnerPanel" class="row">
+        <div class="col-sm-6 col-sm-push-3 col-md-40 col-md-push-40">
+          <div class="panel panel-default">
+
+
+            <div class="panel-heading">
+              <h3 class="panel-title">Owner's Panel</h3>
+            </div>
+
+            <div class="panel-body">
+
+              <strong>Do you want to finalize the contract? </strong> <button class="" id="idFinalize" type="button">Finalize</button>
+              <br/>
+              <br/>
+              <br/>
+              <strong>Emergency Stop: </strong>
+              <br/>
+              this is a circuit breaker to terminate the contract and activate the refunding feature.
+              <br/>
+              <button class="" id="idEmergencyStop" type="button">Emergency Stop</button>
+              <br/>
+
+            </div>
+
+          </div>
+          <br/><br/>
+        </div>
+      </div>
+
+
+
+      <div id="Testing Panel" class="row">
+        <div class="col-sm-6 col-sm-push-3 col-md-40 col-md-push-40">
+          <div class="panel panel-default">
+
+
+            <div class="panel-heading">
+              <h3 class="panel-title">*Testing*</h3>
+            </div>
+
+            <div class="panel-body">
+              This panel is ONLY FOR TESTING purposes. it uses a separate contract to modify "opening" and "closing" time of contract at your will, to ease the testing process.
+              <br/>
+              <br/>
+
+              <strong>Set the number of seconds from now: </strong>
+              <br/>
+              to start contract:
+              <input type="text" class="" id="idSetStartTxt" placeholder="# of seconds" />
+              <br/>
+              to close contract:
+              <input type="text" class="" id="idSetCloseTxt" placeholder="# of seconds" />
+              <br/>
+              <br/>
+              <button class="" id="idSetTime" type="button">Set</button>
+              <br/>
+              <br/>
+
+
+            </div>
+
+          </div>
+          <br/><br/>
+        </div>
+      </div>
+
+
+
+      <button class="" id="idRefresh" type="button">Refresh</button>
+      <br/>
+      <br/>
+      <br/>
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
