@@ -69,32 +69,6 @@ The only contract that can be executed and tested independently is "TicketToken_
 - EventCrowd contract does not operate by itself, since it's main purpose is to control the Token contract anyway.
 - BurnableCrowdsale is an embeded (childs of) 'EventCrowd' and it has only one function to be tested which is 'claimRefund'. we are going to test this function as part of 'EventCrowd' which is it's parent.
 
-## Security considerations & Design pattern
-
-In this section I'll be explaining what steps I've taken to secure the contract from intentional attacks and contract bugs.
-
-  1. Utilizing community audited and accepted smart contracts. In our case, I'm using smart contracts from OpenZepplin for whatever relates to Crowdfunding and Token features. For example, receving and transfering of ether, creating/burning/transfering of Tokens. This is a very sensitive area and prone to attacks, so better to be done with community audited contracts.
-  2. **Restricting access** by implementing 'onlyOwner' in many areas. one example is for burning tokens (which EventCrowd contract is the owner). And the EventCrowd will only burn tokens if the user executed a refund option successfully. the function can be found in TicketToken_01.
-  3. Using SafeMath to prevent **Integer overflow/underflow** for trasfering/minting/burning tokens and ether transfer.
-  4. Using require: require function is used in many areas instead of an 'if' statement to **fail loudly**. one example can be found in claimRefund. were the contract needs to make sure that it is finalized and the goal didn't reach.
-  5. Using **Lifetime** (opening and closing time): the opening time helps in protecting the users by delaying the start time until the contract is being reviewed by the community first. the closing time helps to prevent the contract from being opened for too long or forever for any reason.
-  6. Using **pull over push payments**: if the contract is finalized and the goal did not reach. the users will have the ability to pull the payment (withraw option), instead of sending all the payments back to users by the contract itself (push payment). The pull payment is better to prevent draining the gas during execution, and prevent attacks such as **Denial-of-servier** or **re-entrancy**.
-  7. **State Machines** are heavily used here, were no funding can be made before the openingTime and after the closingTime. the contract can't be finalized before the closingTime too. the withraw function can't be done before the contract is being finalized and reaching its goal, etc.
-  8. introducing Emergency Stop: it's a **circuit breaker** to terminate the contract and activate the refunding feature. It can only be executed by the owner of the EventCrowd. And it won't work if the owner have already took the money out of the contract, because it will be meaningless at that time. The Emergency Stop does three main things:
-            1. It force the contract to expire, so nobody can send funds to it anymore.
-            2. It force the contract to finalize. This is a requirement for refunding.
-            3. It force the excrow account status to be 'Refunding'. This is also a requirement for refunding.
-  - other circuite breaker models that weren't used:
-  	- **Self-destruct** contract: this is a way to distroy the whole contract and won't be usable. this method can be dangerous because it will prevent people from getting their money back if they have already send ether to the contract.
-  	- **Freezing contract**: this method can be used to halt transactions/prevent any changes to state variables by the Owner until the issue is resolved (by waiting until deadline is reached or by upgrading the contract).
-
-  ### current known limitations
-  - Finalize: the problem with Finalize function is that it keeps us dependent on the Owner to trigger it to get the money out of the contract. this will be a risk in case the Owner is not available (or dead!). this can be prevented by introducing an extra layer of deadline (**Auto deprication**)
-  - No phased releases: Currently the Owner (Event Organizer) can get all the funding if it reached the goal and closingTime. However, it would be better to release the funds in multiple phases depending on how the Event Organizer is performing. This can be done by having the community to vote for each release of payment. This feature will be implemented in the future.
-  - No caps implemented: There is no limit/cap for the funding. this is might be a risk if the amount is way too high. Reason: 1) the event organizer might not be able to deal this such uneeded amount. 2) it increases the risk of getting attackers.
-  - I've done two modifications to OpenZepplin contracts. I'm not sure what kind of security holes (hell gates) I'm opening so I'll state the changes and locations here:
-  	- Under 'Timedcrowdsale.sol', in 'hasClosed()' function: i've changed the '>' to '>='. Reason: to be compatible with Truffle test, since Truffle test moves very fast before the contract passes the closingTime.
-  	- Under 'Refundablecrowdsale.sol', in declaring RefundEscrow object: I've changed the object from being private to public. Reason: I need to access the object through EventCrowd_01 in order to execute the 'enableRefund()' function as part of Emergency Stop/circuit breaker fuction for safety.
 
 ## Libraries
 
@@ -102,11 +76,11 @@ In this section I'll be explaining what steps I've taken to secure the contract 
 
 I've included two extra components beyond the basic requirements. They are:
 
-  ### Test net (Rinkeby)
+  ### Testnet (Rinkeby)
 
   Truffle.js conficuration have been modified to cater for Test network in Rinkeby by connecting with Geth. extra details on environement setup will be provided under 'Environment Setup' below.
 
-  ### Using Infura
+  ### Deployment with Infura
 
   I've also configured Truffle.js to connect with [Infura](https://infura.io/). This is by far more convenient that running and connecting through Geth. again, extra details on environement setup will be provided under 'Environment Setup' below.
 
@@ -140,11 +114,11 @@ To make your life easier. I'll try my best to go through steps for installing, c
 4. to make sure it is the same account, check their ether balances if they are equal.
 t. Please rename this account in Metamask to "Ganache 1" or something similar to prevent confusion. It is very easy to use different account and get errors!
 
-That's it, you are done here. If you are still unclear, please refer to google.
+That's it, you are done here. If you are still unclear, please refer to google!
 
 >NOTE: In case you got the following error while doing transactions:
 > "Error: the tx doesn't have the correct nonce."  
-> try to go to Metamask 'Setting' > then click 'Reset account'.
+> go to Metamask 'Setting' > then click 'Reset account'.
 
 
 **Geth deployment**
@@ -155,8 +129,8 @@ We need to do some extra steps with Geth to make sure we are using our own accou
 - try to run Geth and make it is working fine by doing some transactions or deploying contracts to test net.
 - Open Mist and create an account (if you don't have any). and keep in mind the password for it.
 - Copy the Key Chain stored in Mist and past it in the right place of Geth folder
-- test if you can access your mist account in Geth. go to terminal and type `geth --rinkeby --rpc --rpcapi db,eth,net,web3,personal --unlock="0x88daca...Your Mist Account...d25de3ce"`
-- Then it will ask for a password. type it then press `enter`.
+- test if you can access your mist account in Geth. go to terminal and type `geth --rinkeby --rpc --rpcapi db,eth,net,web3,personal --unlock="0x88daca...Your Mist Account...d25de3ce"` (and change the account with your mist account)
+- Then it will ask for a password. type it then press Enter.
 - If it worked well, it should show `Imported new chain segment` every couple of seconds (ethereum block confirmations).
 - now go to Metamask and import the same Key Chain file. you need to do this to be able to sign the contracts with Owner address.
 - make sure to rename the Metamask account to prevent you from confusion. i.e. "Geth Account".
@@ -210,9 +184,9 @@ to learn more about Infura connection with Truffle, you can go to this [link](ht
 
 - Now you can go to buy some tickets. try to change the account in Metamask to another Ganache's account (let's say Ganache 2).
 
-**From here onward we will go for scenario 1, which is Not reaching the funding goal:**
+**From here onward we will go for scenario 1, which is "Not reaching the funding goal":**
 
-- then go to `User Panel` and try to buy 99 tickets (100 tickets to reach our goal. this is a scenario were we are not reaching it).
+- then go to `User Panel` and try to buy 99 tickets (100 tickets to reach our goal).
 
 > NOTE: Before you buy any ticket!
 > make sure that the contract is still open and didn't reach the closing time yet. If not, then you need to do one of the follwoing:
@@ -262,25 +236,12 @@ This is much easier than Geth deployment. before you continue, please refer to "
 
 - Open the terminal and go to the project's folder
 - in terminal type `truffle compile --all`
-- in terminal type `truffle migrate --network infura --reset`
+- then again in terminal type `truffle migrate --network infura --reset`
 - now all contracts should be migrated to test network without any issues.
 
 >NOTE: remember to use your own mnemonic seed words instead of mine, in order to prevent interruption with the balance by other users.
 
+Happy execution. I wish you all the best!
+
 ## License
 Code released under the [MIT License](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/LICENSE).
-
-> NOTE: this is a note note note note [this is a link](https://medium.com/zeppelin-blog/the-hitchhikers-guide-to-smart-contracts-in-ethereum-848f08001f05#.cox40d2ut).
-
-To use with Truffle, first install it and initialize your project with `command/code`.
-
-```sh
-Code code code
-or command command
-```
-
-- **point** - Description.
-	- **sub point** - Description.
-		- *curved text* - Description.
-
-### Small Headline 1
