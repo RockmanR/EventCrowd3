@@ -123,7 +123,7 @@ You should have the same versions of the following software to prevent any possi
 - **NPM**: version 6.2.0
 - **Geth**: version 1.8.12
 - **Ganache**: version 1.2.1
-- **Metamask**: any (chrom plug-in)
+- **Metamask**: version 4.9.3 [link](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) the latest version is way more convenient as it provides pop-up notifications when a transaction success or fail. instead of checking etherscan every time.
 
 other:
 - MacOS: 10.13.6
@@ -132,16 +132,54 @@ other:
 
 To make your life easier. I'll try my best to go through steps for installing, configuring, and testing.
 
-**Metamask**
+**Ganache deployment**
+
 1. download the Metamask plug-in for chrome
 2. Configure metamask to add a localhost network (the one mentioned in Ganache - usually it is HTTP://127.0.0.1:8545) (I think the new Metamask version have the localhost pre-configured)
 3. Add the first Ganache account to Metamask. this can be done by taking the private keys of the first account in Ganache or using seed words of Ganache.
 4. to make sure it is the same account, check their ether balances if they are equal.
 t. Please rename this account in Metamask to "Ganache 1" or something similar to prevent confusion. It is very easy to use different account and get errors!
 
-That's it, you are done here. If you are still unclear, please refer to the web.
+That's it, you are done here. If you are still unclear, please refer to google.
 
->note: In case you got error while doing transactions. please try to go to Metamask 'Setting' > then click 'Reset account'.
+>NOTE: In case you got the following error while doing transactions:
+> "Error: the tx doesn't have the correct nonce."  
+> try to go to Metamask 'Setting' > then click 'Reset account'.
+
+
+**Geth deployment**
+
+We need to do some extra steps with Geth to make sure we are using our own account to deploy contracts and to sign transactions through Metamask. This is needed since we are using the contract with  `OwnlyOwner` functions. below I'll be explaining in very high level steps as FYI. please refer to the internet for extra details.
+
+- Install Geth and Mist into your machine (please refer to the net for details)
+- try to run Geth and make it is working fine by doing some transactions or deploying contracts to test net.
+- Open Mist and create an account (if you don't have any). and keep in mind the password for it.
+- Copy the Key Chain stored in Mist and past it in the right place of Geth folder
+- test if you can access your mist account in Geth. go to terminal and type `geth --rinkeby --rpc --rpcapi db,eth,net,web3,personal --unlock="0x88daca...Your Mist Account...d25de3ce"`
+- Then it will ask for a password. type it then press `enter`.
+- If it worked well, it should show `Imported new chain segment` every couple of seconds (ethereum block confirmations).
+- now go to Metamask and import the same Key Chain file. you need to do this to be able to sign the contracts with Owner address.
+- make sure to rename the Metamask account to prevent you from confusion. i.e. "Geth Account".
+
+
+**Infura deployment**
+
+It is waaaaay easier to deploy contracts in testnet with Infura than with Geth. Infura doen't fail when deploying multiple contracts, unlike Geth for unknown reasons to me. With Infura you don't need to download any node or large files, which is another advantage (beside truffle HDwallet).
+
+There are really no steps to configure Infura. However, it would be better to replace the mnemonic seed words since the one i'm providing might be used my other Consensys Academey program members for testing. which might confuse you my seeing the balance keeps changing or the balance might just be zero. below are steps to change the mnemonic:
+
+- Go to Metamask > Settings > click on 'Reveal Seed Words'
+- type your password to get your seed Words.
+- copy the seed words
+- go to the project folder and open truffle.js
+- Replace the seed words that you have copied into the mnemonic in the second line.
+- you are done!
+
+>NOTE: in case you faced issue regarding HDwallet:
+> open the terminal and go to the project folder
+> then type `npm install truffle-hdwallet-provider`. but i don't think you need to do this step.
+
+to learn more about Infura connection with Truffle, you can go to this [link](https://truffleframework.com/tutorials/using-infura-custom-provider).
 
 ## Walkthrow
 
@@ -155,9 +193,79 @@ That's it, you are done here. If you are still unclear, please refer to the web.
 
 > NOTE: Please make sure that:
 > 1. Metamask is set to localhost
-> 2. Metamask is using Ganache's first account (where deployements are made)
+> 2. Metamask is using Ganache's first account (let's say Ganache 1, where deployements are made)
+
+- Now you should see the contract details under 'Contracts Dashboard'. Including the time to start contract, contract addresses, contract owners, etc.
+- Before you start doing anything, first you need to change the ownership of the TicketToken contract. Currently it is owned by you, but it needs to be owned by the EventCrowd contract in order to process the ticket payments and token transfers.
+
+> NOTE: The contract will not work if you didn't change the ownership.
+
+- go to 'Contracts Dashboard' and click on `change ownership` button.
+
+>NOTE: In case you got the following error while doing transactions:
+> "Error: the tx doesn't have the correct nonce."  
+> try to go to Metamask 'Setting' > then click 'Reset account'.
+
+> NOTE: if the transfer was successful then you should see that TicketToken owner is the same as EventCrowd address.
+
+- Now you can go to buy some tickets. try to change the account in Metamask to another Ganache's account (let's say Ganache 2).
+
+**From here onward we will go for scenario 1, which is Not reaching the funding goal:**
+
+- then go to `User Panel` and try to buy 99 tickets (100 tickets to reach our goal. this is a scenario were we are not reaching it).
+
+> NOTE: Before you buy any ticket!
+> make sure that the contract is still open and didn't reach the closing time yet. If not, then you need to do one of the follwoing:
+> - redeploy again and do all the previous steps faster before the contract closes. or go to solidity and modify the seconds at your preferred time before you redeploy again.
+> - utilize the `*Testing*` Panel to force re-setting the time (i.e. start at 0, close at 500). this function helps us a lot in testing.
+
+- If the transaction was successful, you should see the `Ticket balance` under the User Panel is shown as 99 tickets (try to refresh page if it was still shown 0).
+- You should also see 99 tickets in `Total Bought Tickets` under Contracts Status Panel. This represent number of tickets bought by all users. not just the current Metamask account.
+- You should also see 0.99 ether in `Funding goal`
+
+- Now wait until the contract closing time reach (or utilize the Testing Panel to set the closing time to 0)
+- Change Metamask account back to Ganache 1 (the Owner), then click `Finalize` button under Event Organizer Panel. this will activate the withdraw option since the goal didn't reach.
+- Change Metamask to Ganache 2 and click `withdraw` button under User Panel. you should notice that the ether have returned back to the account (minus the gas costs) and all Ticket balance is back to 0. (again, don't forget to refresh page)
+- we are done with scenario one.
+
+Now you can go back to the first steps and try to do multiple scenarios as you wish, including reaching the goal.
+
+Just be extra careful to use the Owner account when it's needed, and to consider the contract timelines. Otherwise, you will get error messages for contract security.
+
+**Deploying to Rinkeby testnet using Geth**
+
+- make sure Ganache is Closed
+- open your terminal and go to the project folder.
+- Copy the following line `geth --rinkeby --rpc --rpcapi db,eth,net,web3,personal --unlock="0x88daca...Your Mist Account...d25de3ce"` and past it in terminal. replace the address with your Mist or Geth address. then press enter.
+
+> NOTE: please refer to my reference above on how to use Mist account with Geth and MetaMask.
+
+- it should ask you for a password. type it then press Enter.
+- when it connects it should show `Imported new chain segment` every couple of seconds.
+- now keep this terminal open and start another terminal along it (i'll call it terminal-2 to prevent confution).
+- in terminal-2 type `truffle compile --all`
+- in terminal-2 type `truffle migrate --network geth --reset`
+
+> NOTE: in my case this fails a lot of times (10x or more) until it succeed. I don't really know why. You just need to repeat the migration again and again until you get lucky. before any new migration, you need to terminate Geth and operate it again, since I believe there is an expiry time for the validity of the password of Geth. For that reason, deploying with Infura is better.
+
+- in terminal-2 type `npm run dev`
+- A browser should open to show the contract.
+
+> NOTE: make sure that you are connected to localhost and Metamask account is set to the one from Geth/Mist Account.
+
+ Now do the same scenario steps that you have done earlier with Ganache.
 
 
+ **Deploying to Rinkeby testnet using Infura**
+
+This is much easier than Geth deployment. before you continue, please refer to "Infura Deployment" mentioned above.
+
+- Open the terminal and go to the project's folder
+- in terminal type `truffle compile --all`
+- in terminal type `truffle migrate --network infura --reset`
+- now all contracts should be migrated to test network without any issues.
+
+>NOTE: remember to use your own mnemonic seed words instead of mine, in order to prevent interruption with the balance by other users.
 
 ## License
 Code released under the [MIT License](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/LICENSE).
