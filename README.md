@@ -72,6 +72,8 @@ The only contract that can be executed and tested independently is "TicketToken_
 
 ## Libraries
 
+I'm using OpenZepplin libraries, under node_modules files. but these are not upgradable yet. In the future I'll move to zepplinOS which makes their library upgradable.
+
 ## Stretch goals
 
 I've included two extra components beyond the basic requirements. They are:
@@ -98,6 +100,7 @@ You should have the same versions of the following software to prevent any possi
 - **Geth**: version 1.8.12
 - **Ganache**: version 1.2.1
 - **Metamask**: version 4.9.3 [link](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) the latest version is way more convenient as it provides pop-up notifications when a transaction success or fail. instead of checking etherscan every time.
+- **Truffle HDWallet**: this is mandatory for Infura deployment.
 
 other:
 - MacOS: 10.13.6
@@ -140,7 +143,14 @@ We need to do some extra steps with Geth to make sure we are using our own accou
 
 It is waaaaay easier to deploy contracts in testnet with Infura than with Geth. Infura doen't fail when deploying multiple contracts, unlike Geth for unknown reasons to me. With Infura you don't need to download any node or large files, which is another advantage (beside truffle HDwallet).
 
-There are really no steps to configure Infura. However, it would be better to replace the mnemonic seed words since the one i'm providing might be used my other Consensys Academey program members for testing. which might confuse you my seeing the balance keeps changing or the balance might just be zero. below are steps to change the mnemonic:
+There are just minor steps to test with infura. which is installing HDwallet for truffle:
+- open the terminal and go to the project folder
+- then type `npm install truffle-hdwallet-provider`
+- that's it!
+
+to learn more about Infura connection with Truffle, you can go to this [link](https://truffleframework.com/tutorials/using-infura-custom-provider).
+
+ However, it would be better to replace the mnemonic seed words since the one i'm providing might be used my other Consensys Academey program members for testing. which might confuse you my seeing the balance keeps changing or the balance might just be zero. below are steps to change the mnemonic:
 
 - Go to Metamask > Settings > click on 'Reveal Seed Words'
 - type your password to get your seed Words.
@@ -149,11 +159,6 @@ There are really no steps to configure Infura. However, it would be better to re
 - Replace the seed words that you have copied into the mnemonic in the second line.
 - you are done!
 
->NOTE: in case you faced issue regarding HDwallet:
-> open the terminal and go to the project folder
-> then type `npm install truffle-hdwallet-provider`. but i don't think you need to do this step.
-
-to learn more about Infura connection with Truffle, you can go to this [link](https://truffleframework.com/tutorials/using-infura-custom-provider).
 
 ## Walkthrow
 
