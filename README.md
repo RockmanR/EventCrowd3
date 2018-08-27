@@ -102,7 +102,7 @@ You should have the same versions of the following software to prevent any possi
 
 other:
 - MacOS: 10.13.6
-(I'll post another version for Ubuntu)
+(This project developed with Mac. for Ubuntu version please go to my other repository "EventCrowd4_Ubuntu".)
 
 ### Configuration
 
