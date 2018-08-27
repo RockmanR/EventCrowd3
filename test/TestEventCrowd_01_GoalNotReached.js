@@ -136,7 +136,7 @@ contract('Testing both EventCrowd_01 and TicketToken_01 contracts (Goal NOT reac
     let aliceAccount = accounts[0];
     let eventCrowdInstance = await EventCrowd_01.deployed();
     await eventCrowdInstance.finalize({from: aliceAccount});
-    let finalizeStatus = true; // await eventCrowdInstance.isFinalized.call();
+    let finalizeStatus = await eventCrowdInstance.isFinalized.call();
     assert.equal(finalizeStatus,true, "the contract didn't finalize");
   })
 
